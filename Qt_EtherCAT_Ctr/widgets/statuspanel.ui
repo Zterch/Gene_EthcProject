@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>StatusPanel</class>
+ <widget class="QWidget" name="StatusPanel">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>900</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>StatusPanel - 6轴状态监控</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   
+   <!-- 主站状态 -->
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>主站状态</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>连接状态:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="lblConnectionStatus">
+        <property name="text">
+         <string>未连接</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>主站状态:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLabel" name="lblMasterState">
+        <property name="text">
+         <string>未连接</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>运行时间:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QLabel" name="lblRunTime">
+        <property name="text">
+         <string>00:00:00</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="6">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   
+   <!-- 6轴状态表格 -->
+   <item>
+    <widget class="QGroupBox" name="groupBoxAllAxes">
+     <property name="title">
+      <string>6轴实时状态监控 (PDO数据)</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayoutAxes">
+      <item>
+       <widget class="QTableWidget" name="tableAxesStatus">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>250</height>
+         </size>
+        </property>
+        <property name="columnCount">
+         <number>10</number>
+        </property>
+        <property name="horizontalHeaderLabels">
+         <stringlist>
+          <string>轴号</string>
+          <string>状态字</string>
+          <string>CiA402状态</string>
+          <string>错误码</string>
+          <string>实际位置(°)</string>
+          <string>目标位置(°)</string>
+          <string>实际速度(°/s)</string>
+          <string>目标速度(°/s)</string>
+          <string>实际扭矩(Nm)</string>
+          <string>跟随误差(°)</string>
+         </stringlist>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::NoSelection</enum>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   
+   <!-- 当前选中轴详细状态 -->
+   <item>
+    <widget class="QGroupBox" name="groupBoxCurrentAxis">
+     <property name="title">
+      <string>当前选中轴详细状态</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayoutCurrent">
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelCurrentAxis">
+        <property name="text">
+         <string>当前轴:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="lblCurrentAxisId">
+        <property name="text">
+         <string>轴 0</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">font-weight: bold; font-size: 14px; color: blue;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="labelState">
+        <property name="text">
+         <string>状态字:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLabel" name="lblCurrentStateWord">
+        <property name="text">
+         <string>0x0000</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelPos">
+        <property name="text">
+         <string>实际位置:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="lblCurrentPos">
+        <property name="text">
+         <string>0.000 °</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: blue; font-weight: bold;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="labelVel">
+        <property name="text">
+         <string>实际速度:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLabel" name="lblCurrentVel">
+        <property name="text">
+         <string>0.000 °/s</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: green; font-weight: bold;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QLabel" name="labelTorque">
+        <property name="text">
+         <string>实际扭矩:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QLabel" name="lblCurrentTorque">
+        <property name="text">
+         <string>0.000 Nm</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: orange; font-weight: bold;</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,0 +1,8 @@
+/home/zterch/igh_project_8_04/sysEthcProject/build/CMakeFiles/rebuild_cache.dir
+/home/zterch/igh_project_8_04/sysEthcProject/build/CMakeFiles/edit_cache.dir
+/home/zterch/igh_project_8_04/sysEthcProject/build/supr/CMakeFiles/rebuild_cache.dir
+/home/zterch/igh_project_8_04/sysEthcProject/build/supr/CMakeFiles/edit_cache.dir
+/home/zterch/igh_project_8_04/sysEthcProject/build/supr/CMakeFiles/supr.dir
+/home/zterch/igh_project_8_04/sysEthcProject/build/leader/CMakeFiles/rebuild_cache.dir
+/home/zterch/igh_project_8_04/sysEthcProject/build/leader/CMakeFiles/edit_cache.dir
+/home/zterch/igh_project_8_04/sysEthcProject/build/leader/CMakeFiles/leader.dir

@@ -1,0 +1,19 @@
+{
+    "files.associations": {
+        "type_traits": "cpp",
+        "sys_db.h": "c",
+        "socket.h": "c",
+        "sys_master.h": "c",
+        "cmath": "c",
+        "compare": "c",
+        "limits": "c",
+        "*.tcc": "c",
+        "sys_share_conf.h": "c",
+        "sys_master_magic.h": "c",
+        "sys_commu_ipc.h": "c",
+        "sys_ctl.h": "c",
+        "stdlib.h": "c",
+        "stdio.h": "c",
+        "stdbool.h": "c"
+    }
+}

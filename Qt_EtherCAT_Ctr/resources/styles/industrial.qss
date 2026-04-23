@@ -1,0 +1,110 @@
+/* 主窗口样式 */
+QMainWindow {
+    background-color: #2C3E50;
+}
+
+/* 分组框样式 */
+QGroupBox {
+    font-weight: bold;
+    border: 2px solid #3498DB;
+    border-radius: 5px;
+    margin-top: 10px;
+    color: #ECF0F1;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    left: 10px;
+    padding: 0 5px;
+    background-color: #2C3E50;
+}
+
+/* 按钮样式 */
+QPushButton {
+    background-color: #3498DB;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 8px 15px;
+    font-weight: bold;
+    min-width: 80px;
+}
+
+QPushButton:hover {
+    background-color: #2980B9;
+}
+
+QPushButton:pressed {
+    background-color: #1C6EA4;
+}
+
+QPushButton:disabled {
+    background-color: #7F8C8D;
+    color: #BDC3C7;
+}
+
+/* 紧急停止按钮 */
+#btnEmergencyStop {
+    background-color: #E74C3C;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    border: 2px solid #C0392B;
+}
+
+#btnEmergencyStop:hover {
+    background-color: #C0392B;
+}
+
+/* 输入框样式 */
+QLineEdit, QDoubleSpinBox, QSpinBox {
+    background-color: #ECF0F1;
+    border: 2px solid #BDC3C7;
+    border-radius: 3px;
+    padding: 5px;
+    color: #2C3E50;
+}
+
+QLineEdit:focus, QDoubleSpinBox:focus, QSpinBox:focus {
+    border-color: #3498DB;
+}
+
+/* 标签样式 */
+QLabel {
+    color: #ECF0F1;
+    font-weight: bold;
+}
+
+/* 标签页样式 */
+QTabWidget::pane {
+    border: 1px solid #3498DB;
+    background-color: #34495E;
+    border-radius: 3px;
+}
+
+QTabBar::tab {
+    background-color: #2C3E50;
+    color: #ECF0F1;
+    padding: 8px 15px;
+}
+
+QTabBar::tab:selected {
+    background-color: #3498DB;
+    color: white;
+}
+
+/* 文本框样式 */
+QPlainTextEdit {
+    background-color: #ECF0F1;
+    color: #2C3E50;
+    border: 1px solid #BDC3C7;
+    border-radius: 3px;
+    font-family: "Monospace";
+}
+
+/* 状态栏样式 */
+QStatusBar {
+    background-color: #34495E;
+    color: #ECF0F1;
+}

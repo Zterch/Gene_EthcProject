@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/zterch/igh_project_8_04/sysEthcProject/sys_share/sys_share_daemon.c
+unistd.h
+-
+stdio.h
+-
+sys/stat.h
+-
+string.h
+-
+sched.h
+-
+pthread.h
+-
+sys_share_daemon.h
+/home/zterch/igh_project_8_04/sysEthcProject/sys_share/sys_share_daemon.h
+
+/home/zterch/igh_project_8_04/sysEthcProject/sys_share/sys_share_daemon.h
+sched.h
+-
+stdlib.h
+-
+string.h
+-
+stdio.h
+-
+stdint.h
+-
+

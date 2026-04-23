@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>900</width>
+    <height>794</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>EtherCAT 控制系统</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="controlTab">
+       <attribute name="title">
+        <string>控制面板</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
+         <widget class="QGroupBox" name="groupBox">
+          <property name="title">
+           <string>连接设置</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>服务器IP:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="txtServerIP">
+             <property name="text">
+              <string>127.0.0.1</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>端口:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QSpinBox" name="spinServerPort">
+             <property name="minimum">
+              <number>1</number>
+             </property>
+             <property name="maximum">
+              <number>65535</number>
+             </property>
+             <property name="value">
+              <number>33333</number>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2" rowspan="2">
+            <widget class="QPushButton" name="btnConnect">
+             <property name="text">
+              <string>连接</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3" rowspan="2">
+            <widget class="QPushButton" name="btnDisconnect">
+             <property name="text">
+              <string>断开</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="title">
+           <string>主站生命周期</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="0" column="0">
+            <widget class="QPushButton" name="btnCreateMaster">
+             <property name="text">
+              <string>1.创建主站</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="btnConfigurePDO">
+             <property name="text">
+              <string>2.配置PDO</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="btnActivateMaster">
+             <property name="styleSheet">
+              <string notr="true">background-color: lightgreen; font-weight: bold;</string>
+             </property>
+             <property name="text">
+              <string>3.激活主站</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="btnScanSlaves">
+             <property name="text">
+              <string>扫描从站</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="btnClearErrors">
+             <property name="text">
+              <string>清除错误</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="btnDestroyMaster">
+             <property name="styleSheet">
+              <string notr="true">background-color: lightcoral;</string>
+             </property>
+             <property name="text">
+              <string>销毁主站</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QGroupBox" name="groupBox_6axis">
+          <property name="title">
+           <string>6轴控制面板</string>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout6Axis">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayoutAxisSelect">
+             <item>
+              <widget class="QLabel" name="lblCurrentAxis">
+               <property name="text">
+                <string>当前控制轴:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="comboCurrentAxis">
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacerAxis">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayoutMultiAxis">
+             <item>
+              <widget class="QLabel" name="labelMultiAxis">
+               <property name="text">
+                <string>多轴选择:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="chkAxis0">
+               <property name="text">
+                <string>轴0</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="chkAxis1">
+               <property name="text">
+                <string>轴1</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="chkAxis2">
+               <property name="text">
+                <string>轴2</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="chkAxis3">
+               <property name="text">
+                <string>轴3</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="chkAxis4">
+               <property name="text">
+                <string>轴4</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="chkAxis5">
+               <property name="text">
+                <string>轴5</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="btnMultiAxisControl">
+               <property name="text">
+                <string>多轴独立控制...</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacerMultiAxis">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBoxAllAxes">
+             <property name="title">
+              <string>6轴整体控制 (轴掩码: 0x3F)</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayoutAllAxes">
+              <item>
+               <widget class="QPushButton" name="btnAllShutdown">
+                <property name="toolTip">
+                 <string>发送0x0006到所有6个轴</string>
+                </property>
+                <property name="text">
+                 <string>全部Shutdown</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnAllSwitchOn">
+                <property name="toolTip">
+                 <string>发送0x0007到所有6个轴</string>
+                </property>
+                <property name="text">
+                 <string>全部Switch On</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnAllEnableOp">
+                <property name="toolTip">
+                 <string>发送0x000F到所有6个轴</string>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: lightgreen; font-weight: bold;</string>
+                </property>
+                <property name="text">
+                 <string>全部Enable Op</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnAllHalt">
+                <property name="toolTip">
+                 <string>发送0x0000到所有6个轴</string>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">background-color: lightcoral;</string>
+                </property>
+                <property name="text">
+                 <string>全部Halt</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnAllFaultReset">
+                <property name="toolTip">
+                 <string>发送0x0080到所有6个轴</string>
+                </property>
+                <property name="text">
+                 <string>全部Fault Reset</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBoxSingleAxis">
+             <property name="title">
+              <string>单轴控制 (当前选中轴)</string>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayoutSingleAxis">
+              <item>
+               <widget class="QPushButton" name="btnAxisShutdown">
+                <property name="text">
+                 <string>Shutdown</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnAxisSwitchOn">
+                <property name="text">
+                 <string>Switch On</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnAxisEnableOp">
+                <property name="styleSheet">
+                 <string notr="true">background-color: lightblue; font-weight: bold;</string>
+                </property>
+                <property name="text">
+                 <string>Enable Op</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnAxisHalt">
+                <property name="styleSheet">
+                 <string notr="true">background-color: orange;</string>
+                </property>
+                <property name="text">
+                 <string>Halt</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QGroupBox" name="groupBox_3">
+          <property name="title">
+           <string>紧急控制</string>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QPushButton" name="btnEmergencyStop">
+             <property name="styleSheet">
+              <string notr="true">background-color: red; color: white; font-weight: bold; font-size: 16px; padding: 10px;</string>
+             </property>
+             <property name="text">
+              <string>紧急停止 (6轴)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QGroupBox" name="groupBox_4">
+          <property name="title">
+           <string>运动控制 (当前选中轴)</string>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_4">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_3">
+             <property name="text">
+              <string>速度 (度/秒):</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QDoubleSpinBox" name="spinVelocity">
+             <property name="minimum">
+              <double>-360.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>360.000000000000000</double>
+             </property>
+             <property name="value">
+              <double>10.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="btnJogPositive">
+             <property name="text">
+              <string>正转</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QPushButton" name="btnJogNegative">
+             <property name="text">
+              <string>反转</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QPushButton" name="btnStopMotion">
+             <property name="styleSheet">
+              <string notr="true">background-color: orange;</string>
+             </property>
+             <property name="text">
+              <string>停止</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_4">
+             <property name="text">
+              <string>位置 (度):</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QDoubleSpinBox" name="spinPosition">
+             <property name="minimum">
+              <double>-360.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>360.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="btnMoveRelative">
+             <property name="text">
+              <string>相对运动</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="QPushButton" name="btnMoveAbsolute">
+             <property name="text">
+              <string>绝对运动</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="statusTab">
+       <attribute name="title">
+        <string>状态监控</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2"/>
+      </widget>
+      <widget class="QWidget" name="logTab">
+       <attribute name="title">
+        <string>运行日志</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QPlainTextEdit" name="txtLog">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QPushButton" name="btnClearLog">
+            <property name="text">
+             <string>清空日志</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
