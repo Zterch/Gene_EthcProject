@@ -30,22 +30,26 @@ EtherCATCommander::EtherCATCommander(QObject *parent)
     , m_statusReportTimer(new QTimer(this))
     , m_isConnected(false)
     , m_heartbeatCounter(0)
-    , m_axisCount(6)
-    , m_activeAxisCount(6)
+    , m_axisCount(8)  // 修改为8轴（含第七轴伸缩电机和第八轴六维力传感器）
+    , m_activeAxisCount(8)
     , m_hasReceivedStatus(false)
+    , m_axis7HomingRequired(true)  // 第七轴需要回零
+    , m_axis7Position(0.0f)
+    , m_forceSensorFx(0.0f), m_forceSensorFy(0.0f), m_forceSensorFz(0.0f)
+    , m_torqueSensorMx(0.0f), m_torqueSensorMy(0.0f), m_torqueSensorMz(0.0f)
 {
-    // 【修复】分开resize和初始化
-    m_slaveStates.resize(6);
-    for (int i = 0; i < 6; i++) m_slaveStates[i] = STATE_UNKNOWN;
+    // 【修复】分开resize和初始化，支持8轴
+    m_slaveStates.resize(8);
+    for (int i = 0; i < 8; i++) m_slaveStates[i] = STATE_UNKNOWN;
 
-    m_actualPositions.resize(6);
-    for (int i = 0; i < 6; i++) m_actualPositions[i] = 0.0f;
+    m_actualPositions.resize(8);
+    for (int i = 0; i < 8; i++) m_actualPositions[i] = 0.0f;
 
-    m_actualVelocities.resize(6);
-    for (int i = 0; i < 6; i++) m_actualVelocities[i] = 0.0f;
+    m_actualVelocities.resize(8);
+    for (int i = 0; i < 8; i++) m_actualVelocities[i] = 0.0f;
 
-    m_actualTorques.resize(6);
-    for (int i = 0; i < 6; i++) m_actualTorques[i] = 0.0f;
+    m_actualTorques.resize(8);
+    for (int i = 0; i < 8; i++) m_actualTorques[i] = 0.0f;
 
     memset(&m_lastStatusReport, 0, sizeof(m_lastStatusReport));
 
@@ -655,9 +659,33 @@ void EtherCATCommander::parseStatusReport(const MasterStatusReport *report)
         const SlavePdoData &pdo = report->slaves[i];
         emit pdoDataUpdated(i, pdo);
 
-        float position = pdo.actualPosition /1000;
-        float velocity = (pdo.actualVelocity * 6.0f) / 101.0f;
-        float torque = pdo.actualTorque / 1000.0f;
+        float position, velocity, torque;
+        
+        if (i == 6) {
+            // 第七轴(伸缩轴): 位置单位为mm，速度需要特殊转换
+            position = pdo.actualPosition / 1000.0f;  // mm
+            // 第七轴速度: 计数/秒 转 mm/s
+            // 速度转换: counts/s -> mm/s 
+            // 减速比3.705，丝杠导程10mm，编码器17位(131072计数/圈)
+            // mm/s = counts/s * 导程 / (编码器计数 * 减速比)
+            velocity = pdo.actualVelocity * 10.0f / (131072.0f * 3.705f);
+            torque = pdo.actualTorque / 1000.0f;
+            
+            // 保存第七轴位置
+            m_axis7Position = position;
+        } else if (i == 7) {
+            // 第八轴(六维力传感器): 直接从PDO数据解析
+            // 数据已经通过状态报告传递，这里从扩展字段解析
+            // 注意：实际数据需要通过特殊的数据结构传递
+            position = 0.0f;
+            velocity = 0.0f;
+            torque = 0.0f;
+        } else {
+            // 普通旋转轴: 位置单位为度
+            position = pdo.actualPosition / 1000.0f;  // 度
+            velocity = (pdo.actualVelocity * 6.0f) / 101.0f;  // deg/s
+            torque = pdo.actualTorque / 1000.0f;
+        }
 
         m_actualPositions[i] = position;
         m_actualVelocities[i] = velocity;
@@ -673,6 +701,17 @@ void EtherCATCommander::parseStatusReport(const MasterStatusReport *report)
             emit slaveStateChanged(i, newState);
         }
     }
+
+    /* 解析第八轴(六维力传感器)数据 */
+    m_forceSensorFx = report->forceFx;
+    m_forceSensorFy = report->forceFy;
+    m_forceSensorFz = report->forceFz;
+    m_torqueSensorMx = report->torqueMx;
+    m_torqueSensorMy = report->torqueMy;
+    m_torqueSensorMz = report->torqueMz;
+    m_forceSensorStatus = report->forceSensorStatus;
+    m_forceSensorCounter = report->forceSensorCounter;
+    m_forceSensorTemp = report->forceSensorTemp;
 }
 
 void EtherCATCommander::parseSuprRMsg(const SuprRMsg *msg, int totalSize)
@@ -868,4 +907,38 @@ bool EtherCATCommander::moveAbsolute(const QVector<int>& axes, const QVector<flo
     }
 
     return sendCommand(CMD_HAND_ABS_POS_M, data);
+}
+
+// 第七轴(伸缩轴)回零功能实现
+bool EtherCATCommander::axis7Homing(float targetHomeMm, float homingSpeedMmPerSec)
+{
+    if (!m_isConnected) {
+        emit logMessage("错误: 未连接到主站，无法执行回零", true);
+        return false;
+    }
+
+    // 构造回零命令数据: 目标位置(4字节float) + 回零速度(4字节float)
+    QByteArray data;
+    data.resize(2 * sizeof(float));
+    
+    float* params = reinterpret_cast<float*>(data.data());
+    params[0] = targetHomeMm;
+    params[1] = homingSpeedMmPerSec;
+
+    if (sendCommand(CMD_AXIS7_HOMING, data)) {
+        emit logMessage(QString("发送第七轴回零命令: 目标 %.2fmm, 速度 %.2fmm/s")
+                       .arg(targetHomeMm).arg(homingSpeedMmPerSec), false);
+        return true;
+    }
+    return false;
+}
+
+bool EtherCATCommander::isAxis7HomingRequired() const
+{
+    return m_axis7HomingRequired;
+}
+
+float EtherCATCommander::getAxis7Position() const
+{
+    return m_axis7Position;
 }

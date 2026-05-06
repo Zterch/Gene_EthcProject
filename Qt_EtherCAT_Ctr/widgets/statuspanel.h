@@ -42,6 +42,7 @@ private:
     void initAxesTable();
     void updateAxisRow(int axis, const SlavePdoData &pdoData);
     void updateCurrentAxisDisplay(int axis);
+    void updateForceSensorDisplay();  // 更新六维力传感器数据显示
     QString getStateColor(EtherCATCommander::SlaveState state);
     QString getCiA402StateString(uint16_t statusWord);
     QString getStateString(EtherCATCommander::SlaveState state);
@@ -50,7 +51,7 @@ private:
     EtherCATCommander *m_commander;
     QTimer *m_updateTimer;
 
-    static const int MAX_AXES = 6;
+    static const int MAX_AXES = 8;  // 支持8轴（含第七轴伸缩电机和第八轴六维力传感器）
     int m_currentAxis;  // 当前选中的轴
     bool m_hasPdoData[MAX_AXES];
     SlavePdoData m_lastPdoData[MAX_AXES];

@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>400</height>
+    <width>700</width>
+    <height>450</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>多轴独立控制</string>
+   <string>多轴独立控制(含第七轴伸缩电机)</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -144,6 +144,29 @@
         <property name="value"><double>0.0</double></property>
        </widget>
       </item>
+
+      <!-- 轴6(第七轴-伸缩电机) -->
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_6"><property name="text"><string>轴6(伸缩)</string></property></widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QDoubleSpinBox" name="spinVel6">
+        <property name="minimum"><double>-10.0</double></property>
+        <property name="maximum"><double>10.0</double></property>
+        <property name="singleStep"><double>0.1</double></property>
+        <property name="value"><double>0.0</double></property>
+        <property name="suffix"><string> mm/s</string></property>
+       </widget>
+      </item>
+      <item row="7" column="2">
+       <widget class="QDoubleSpinBox" name="spinPos6">
+        <property name="minimum"><double>0.0</double></property>
+        <property name="maximum"><double>10.0</double></property>
+        <property name="singleStep"><double>0.1</double></property>
+        <property name="value"><double>0.0</double></property>
+        <property name="suffix"><string> mm</string></property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -162,6 +185,12 @@
      <item>
       <widget class="QPushButton" name="btnApplyAbsolutePos">
        <property name="text"><string>应用绝对位置</string></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnAxis7Homing">
+       <property name="text"><string>第七轴回零</string></property>
+       <property name="styleSheet"><string>background-color: #ff6b6b; color: white;</string></property>
       </widget>
      </item>
      <item>

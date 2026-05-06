@@ -28,10 +28,11 @@ PidConfigTab::PidConfigTab(QWidget *parent)
         {64, "Pos_FF", "位置前馈百分比", 0, 100, 0, "%"}
     };
 
-    // 初始化轴选择
+    // 初始化轴选择 - 7轴(含第七轴伸缩电机)
     ui->comboAxis->clear();
-    for (int i = 0; i < 8; i++) {
-        ui->comboAxis->addItem(QString("轴 %1").arg(i), i);
+    for (int i = 0; i < 7; i++) {
+        QString axisName = (i == 6) ? QString("轴 %1 (伸缩)").arg(i) : QString("轴 %1").arg(i);
+        ui->comboAxis->addItem(axisName, i);
     }
 
     setupParamTable();

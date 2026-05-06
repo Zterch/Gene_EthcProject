@@ -115,7 +115,7 @@ void StatusPanel::initAxesTable()
 {
     if (!ui->tableAxesStatus) return;
 
-    // 设置6行（6个轴）
+    // 设置8行（8个轴：6轴旋转+1轴伸缩+1轴力传感器）
     ui->tableAxesStatus->setRowCount(MAX_AXES);
 
     // 设置列宽
@@ -172,6 +172,29 @@ void StatusPanel::updateAxisRow(int axis, const SlavePdoData &pdoData)
         return item;
     };
 
+    // 第八轴(六维力传感器)单独显示
+    if (axis == 7) {
+        QString axisLabel = QString("轴%1(力传感器)").arg(axis);
+        getItem(axis, 0)->setText(axisLabel);
+        // 传感器不显示CiA402状态字，显示数据有效状态
+        getItem(axis, 1)->setText("N/A");
+        getItem(axis, 2)->setText("运行中");
+        getItem(axis, 2)->setForeground(QColor("green"));
+        getItem(axis, 3)->setText("N/A");
+        // 在位置列显示Fx, Fy, Fz
+        getItem(axis, 4)->setText("见下方数据");
+        getItem(axis, 5)->setText("--");
+        getItem(axis, 6)->setText("--");
+        getItem(axis, 7)->setText("--");
+        getItem(axis, 8)->setText("--");
+        getItem(axis, 9)->setText("--");
+        return;
+    }
+
+    // 轴号标签（第七轴特殊标记）
+    QString axisLabel = (axis == 6) ? QString("轴%1(伸缩)").arg(axis) : QString("轴%1").arg(axis);
+    getItem(axis, 0)->setText(axisLabel);
+
     // 状态字 (十六进制)
     QString stateWord = QString("0x%1").arg(pdoData.statusWord, 4, 16, QChar('0')).toUpper();
     getItem(axis, 1)->setText(stateWord);
@@ -201,34 +224,67 @@ void StatusPanel::updateAxisRow(int axis, const SlavePdoData &pdoData)
         getItem(axis, 3)->setForeground(QColor("green"));
     }
 
-    // 实际位置 (转换为度)
-    //float actualPos = pdoData.actualPosition * 360.0f / 105906176.0f;
-    float actualPos = pdoData.actualPosition / 1000.0f;
-    getItem(axis, 4)->setText(QString::number(actualPos, 'f', 3));
+    // 第七轴使用mm单位，其他轴使用度
+    if (axis == 6) {
+        // 第七轴(伸缩轴): 实际位置单位为mm
+        float actualPos = pdoData.actualPosition / 1000.0f;  // mm
+        getItem(axis, 4)->setText(QString::number(actualPos, 'f', 3) + " mm");
 
-    // 目标位置
-    float targetPos = pdoData.targetPosition * 360.0f / 105906176.0f;
-    getItem(axis, 5)->setText(QString::number(targetPos, 'f', 3));
+        // 目标位置
+        float targetPos = pdoData.targetPosition / 1000.0f;  // mm
+        getItem(axis, 5)->setText(QString::number(targetPos, 'f', 3) + " mm");
 
-    // 实际速度 (转换为度/秒)
-    float actualVel = (pdoData.actualVelocity * 6.0f) / 101.0f;
-    getItem(axis, 6)->setText(QString::number(actualVel, 'f', 3));
+        // 实际速度: 计数/秒 -> mm/s
+        // 减速比3.705，丝杠导程10mm，编码器131072计数/圈
+        // mm/s = counts/s * 导程 / (编码器计数 * 减速比)
+        float actualVel = pdoData.actualVelocity * 10.0f / (131072.0f * 3.705f);
+        getItem(axis, 6)->setText(QString::number(actualVel, 'f', 3) + " mm/s");
 
-    // 目标速度
-    float targetVel = pdoData.targetVelocity * 360.0f / 105906176.0f;
-    getItem(axis, 7)->setText(QString::number(targetVel, 'f', 3));
+        // 目标速度
+        float targetVel = pdoData.targetVelocity * 10.0f / (131072.0f * 3.705f);
+        getItem(axis, 7)->setText(QString::number(targetVel, 'f', 3) + " mm/s");
 
-    // 实际扭矩 (转换为Nm)
-    float actualTorque = pdoData.actualTorque / 1000.0f;
-    getItem(axis, 8)->setText(QString::number(actualTorque, 'f', 3));
+        // 实际扭矩 (转换为Nm)
+        float actualTorque = pdoData.actualTorque / 1000.0f;
+        getItem(axis, 8)->setText(QString::number(actualTorque, 'f', 3) + " Nm");
 
-    // 跟随误差
-    float followError = pdoData.followingError * 360.0f / 105906176.0f;
-    getItem(axis, 9)->setText(QString::number(followError, 'f', 4));
-    if (fabs(followError) > 1.0f) {
-        getItem(axis, 9)->setForeground(QColor("red"));
+        // 跟随误差 (mm)
+        float followError = pdoData.followingError / 1000.0f;  // mm
+        getItem(axis, 9)->setText(QString::number(followError, 'f', 4) + " mm");
+        if (fabs(followError) > 0.5f) {  // 第七轴使用0.5mm容差
+            getItem(axis, 9)->setForeground(QColor("red"));
+        } else {
+            getItem(axis, 9)->setForeground(QColor("black"));
+        }
     } else {
-        getItem(axis, 9)->setForeground(QColor("black"));
+        // 普通旋转轴: 使用度单位
+        float actualPos = pdoData.actualPosition / 1000.0f;  // 度
+        getItem(axis, 4)->setText(QString::number(actualPos, 'f', 3) + " °");
+
+        // 目标位置
+        float targetPos = pdoData.targetPosition * 360.0f / 105906176.0f;
+        getItem(axis, 5)->setText(QString::number(targetPos, 'f', 3) + " °");
+
+        // 实际速度 (转换为度/秒)
+        float actualVel = (pdoData.actualVelocity * 6.0f) / 101.0f;
+        getItem(axis, 6)->setText(QString::number(actualVel, 'f', 3) + " °/s");
+
+        // 目标速度
+        float targetVel = pdoData.targetVelocity * 360.0f / 105906176.0f;
+        getItem(axis, 7)->setText(QString::number(targetVel, 'f', 3) + " °/s");
+
+        // 实际扭矩 (转换为Nm)
+        float actualTorque = pdoData.actualTorque / 1000.0f;
+        getItem(axis, 8)->setText(QString::number(actualTorque, 'f', 3) + " Nm");
+
+        // 跟随误差 (度)
+        float followError = pdoData.followingError * 360.0f / 105906176.0f;
+        getItem(axis, 9)->setText(QString::number(followError, 'f', 4) + " °");
+        if (fabs(followError) > 1.0f) {
+            getItem(axis, 9)->setForeground(QColor("red"));
+        } else {
+            getItem(axis, 9)->setForeground(QColor("black"));
+        }
     }
 
     // 如果这是当前选中的轴，更新详细显示
@@ -244,18 +300,33 @@ void StatusPanel::updateCurrentAxisDisplay(int axis)
 
     const SlavePdoData &pdo = m_lastPdoData[axis];
 
-    ui->lblCurrentAxisId->setText(QString("轴 %1").arg(axis));
+    // 第七轴特殊标记
+    QString axisLabel = (axis == 6) ? QString("轴 %1 (伸缩电机)").arg(axis) : QString("轴 %1").arg(axis);
+    ui->lblCurrentAxisId->setText(axisLabel);
     ui->lblCurrentStateWord->setText(QString("0x%1").arg(pdo.statusWord, 4, 16, QChar('0')).toUpper());
 
-    //float actualPos = pdo.actualPosition * 360.0f / 105906176.0f;
-    float actualPos = pdo.actualPosition / 1000.0f;
-    ui->lblCurrentPos->setText(QString::number(actualPos, 'f', 3) + " °");
+    if (axis == 6) {
+        // 第七轴(伸缩轴): 使用mm单位
+        float actualPos = pdo.actualPosition / 1000.0f;  // mm
+        ui->lblCurrentPos->setText(QString::number(actualPos, 'f', 3) + " mm");
 
-    float actualVel = (pdo.actualVelocity * 6.0f) / 101.0f;
-    ui->lblCurrentVel->setText(QString::number(actualVel, 'f', 3) + " °/s");
+        // 速度: 计数/秒 -> mm/s
+        float actualVel = pdo.actualVelocity * 10.0f / (131072.0f * 3.705f);
+        ui->lblCurrentVel->setText(QString::number(actualVel, 'f', 3) + " mm/s");
 
-    float actualTorque = pdo.actualTorque / 1000.0f;
-    ui->lblCurrentTorque->setText(QString::number(actualTorque, 'f', 3) + " Nm");
+        float actualTorque = pdo.actualTorque / 1000.0f;
+        ui->lblCurrentTorque->setText(QString::number(actualTorque, 'f', 3) + " Nm");
+    } else {
+        // 普通旋转轴: 使用度单位
+        float actualPos = pdo.actualPosition / 1000.0f;  // 度
+        ui->lblCurrentPos->setText(QString::number(actualPos, 'f', 3) + " °");
+
+        float actualVel = (pdo.actualVelocity * 6.0f) / 101.0f;
+        ui->lblCurrentVel->setText(QString::number(actualVel, 'f', 3) + " °/s");
+
+        float actualTorque = pdo.actualTorque / 1000.0f;
+        ui->lblCurrentTorque->setText(QString::number(actualTorque, 'f', 3) + " Nm");
+    }
 }
 
 void StatusPanel::onConnectionStateChanged(bool connected)
@@ -342,6 +413,9 @@ void StatusPanel::onStatusReportReceived(const MasterStatusReport &report)
     for (int i = 0; i < activeCount; i++) {
         updateAxisRow(i, report.slaves[i]);
     }
+    
+    // 更新六维力传感器数据显示
+    updateForceSensorDisplay();
 }
 
 void StatusPanel::onUpdateTimer()
@@ -424,4 +498,34 @@ QString StatusPanel::getCiA402StateString(uint16_t statusWord)
             }
             return QString("未知(%1)").arg(stateBits, 2, 16, QChar('0'));
     }
+}
+
+void StatusPanel::updateForceSensorDisplay()
+{
+    if (!m_commander) return;
+    if (!ui->lblFxValue || !ui->lblFyValue || !ui->lblFzValue) return;
+    if (!ui->lblMxValue || !ui->lblMyValue || !ui->lblMzValue) return;
+    if (!ui->lblForceStatusValue || !ui->lblForceTempValue || !ui->lblForceCounterValue) return;
+
+    // 获取六维力传感器数据
+    float fx = m_commander->getForceSensorFx();
+    float fy = m_commander->getForceSensorFy();
+    float fz = m_commander->getForceSensorFz();
+    float mx = m_commander->getTorqueSensorMx();
+    float my = m_commander->getTorqueSensorMy();
+    float mz = m_commander->getTorqueSensorMz();
+    uint32_t status = m_commander->getForceSensorStatus();
+    uint32_t counter = m_commander->getForceSensorCounter();
+    float temp = m_commander->getForceSensorTemp();
+
+    // 更新显示
+    ui->lblFxValue->setText(QString("%1 N").arg(fx, 6, 'f', 3));
+    ui->lblFyValue->setText(QString("%1 N").arg(fy, 6, 'f', 3));
+    ui->lblFzValue->setText(QString("%1 N").arg(fz, 6, 'f', 3));
+    ui->lblMxValue->setText(QString("%1 Nm").arg(mx, 6, 'f', 3));
+    ui->lblMyValue->setText(QString("%1 Nm").arg(my, 6, 'f', 3));
+    ui->lblMzValue->setText(QString("%1 Nm").arg(mz, 6, 'f', 3));
+    ui->lblForceStatusValue->setText(QString("0x%1").arg(status, 8, 16, QChar('0')));
+    ui->lblForceTempValue->setText(QString("%1 °C").arg(temp, 0, 'f', 1));
+    ui->lblForceCounterValue->setText(QString("%1").arg(counter));
 }

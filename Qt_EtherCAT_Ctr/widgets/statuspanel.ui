@@ -215,6 +215,168 @@
     </widget>
    </item>
    
+   <!-- 六维力传感器数据显示 -->
+   <item>
+    <widget class="QGroupBox" name="groupBoxForceSensor">
+     <property name="title">
+      <string>六维力传感器数据 (轴7)</string>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QGroupBox { color: green; font-weight: bold; }</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayoutForce">
+      <!-- 力数据 Fx, Fy, Fz -->
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelFx">
+        <property name="text">
+         <string>Fx:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="lblFxValue">
+        <property name="text">
+         <string>0.000 N</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: blue; font-weight: bold;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="labelFy">
+        <property name="text">
+         <string>Fy:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLabel" name="lblFyValue">
+        <property name="text">
+         <string>0.000 N</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: blue; font-weight: bold;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QLabel" name="labelFz">
+        <property name="text">
+         <string>Fz:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QLabel" name="lblFzValue">
+        <property name="text">
+         <string>0.000 N</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: blue; font-weight: bold;</string>
+        </property>
+       </widget>
+      </item>
+      <!-- 力矩数据 Mx, My, Mz -->
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelMx">
+        <property name="text">
+         <string>Mx:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="lblMxValue">
+        <property name="text">
+         <string>0.000 Nm</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: green; font-weight: bold;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="labelMy">
+        <property name="text">
+         <string>My:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLabel" name="lblMyValue">
+        <property name="text">
+         <string>0.000 Nm</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: green; font-weight: bold;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QLabel" name="labelMz">
+        <property name="text">
+         <string>Mz:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QLabel" name="lblMzValue">
+        <property name="text">
+         <string>0.000 Nm</string>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">color: green; font-weight: bold;</string>
+        </property>
+       </widget>
+      </item>
+      <!-- 状态信息 -->
+      <item row="2" column="0">
+       <widget class="QLabel" name="labelForceStatus">
+        <property name="text">
+         <string>状态:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="lblForceStatusValue">
+        <property name="text">
+         <string>0x0000</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="labelForceTemp">
+        <property name="text">
+         <string>温度:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QLabel" name="lblForceTempValue">
+        <property name="text">
+         <string>25.0 °C</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="4">
+       <widget class="QLabel" name="labelForceCounter">
+        <property name="text">
+         <string>计数:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="5">
+       <widget class="QLabel" name="lblForceCounterValue">
+        <property name="text">
+         <string>0</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   
+   <!-- 垂直间隔 -->
    <item>
     <spacer name="verticalSpacer">
      <property name="orientation">

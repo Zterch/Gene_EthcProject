@@ -46,6 +46,16 @@ struct MasterStatusReport {
     SlavePdoData slaves[8];
     uint32_t  cycleCount;
     uint32_t  domainWC;
+    // 第八轴(六维力传感器)数据 - 单独字段
+    float     forceFx;          // X方向力 (N)
+    float     forceFy;          // Y方向力 (N)
+    float     forceFz;          // Z方向力 (N)
+    float     torqueMx;         // X方向力矩 (Nm)
+    float     torqueMy;         // Y方向力矩 (Nm)
+    float     torqueMz;         // Z方向力矩 (Nm)
+    uint32_t  forceSensorStatus; // 力传感器状态码
+    uint32_t  forceSensorCounter; // 采样计数器
+    float     forceSensorTemp;  // 传感器温度 (°C)
 };
 
 #pragma pack(pop)
@@ -75,7 +85,8 @@ public:
         CMD_MASTER_OP_KEYDOWN   = 120,
         CMD_PID_READ_PARAMS     = 130,
         CMD_PID_WRITE_PARAMS    = 131,
-        CMD_PID_SAVE_TO_FLASH   = 132
+        CMD_PID_SAVE_TO_FLASH   = 132,
+        CMD_AXIS7_HOMING        = 121   // 第七轴回零命令
     };
 
     enum SlaveState {
@@ -141,6 +152,22 @@ public:
     bool moveRelative(const QVector<int>& axes, const QVector<float>& positions);
     bool moveAbsolute(const QVector<int>& axes, const QVector<float>& positions);
 
+    // 第七轴(伸缩轴)回零功能
+    bool axis7Homing(float targetHomeMm = 0.0f, float homingSpeedMmPerSec = 2.0f);
+    bool isAxis7HomingRequired() const;
+    float getAxis7Position() const;
+
+    // 第八轴(六维力传感器)数据获取
+    float getForceSensorFx() const { return m_forceSensorFx; }
+    float getForceSensorFy() const { return m_forceSensorFy; }
+    float getForceSensorFz() const { return m_forceSensorFz; }
+    float getTorqueSensorMx() const { return m_torqueSensorMx; }
+    float getTorqueSensorMy() const { return m_torqueSensorMy; }
+    float getTorqueSensorMz() const { return m_torqueSensorMz; }
+    uint32_t getForceSensorStatus() const { return m_forceSensorStatus; }
+    uint32_t getForceSensorCounter() const { return m_forceSensorCounter; }
+    float getForceSensorTemp() const { return m_forceSensorTemp; }
+
 signals:
     void connectionStateChanged(bool connected);
     void masterStateChanged(const QString &state);
@@ -155,6 +182,7 @@ signals:
     void pidParamsReceived(int axis, const QVector<QPair<int, float>> &params);
     void pidWriteResult(int axis, int successCount, int totalCount);
     void pidSaveResult(int axis, bool success);
+    void axis7HomingResult(bool success, float currentPosition);
 
 private slots:
     void onDataReceived(const QByteArray &data);
@@ -196,6 +224,21 @@ private:
 
     MasterStatusReport m_lastStatusReport;
     bool m_hasReceivedStatus;
+
+    // 第七轴(伸缩轴)状态
+    bool m_axis7HomingRequired;  // 是否需要回零
+    float m_axis7Position;       // 当前位置(mm)
+
+    // 第八轴(六维力传感器)数据
+    float m_forceSensorFx;       // X方向力 (N)
+    float m_forceSensorFy;       // Y方向力 (N)
+    float m_forceSensorFz;       // Z方向力 (N)
+    float m_torqueSensorMx;      // X方向力矩 (Nm)
+    float m_torqueSensorMy;      // Y方向力矩 (Nm)
+    float m_torqueSensorMz;      // Z方向力矩 (Nm)
+    uint32_t m_forceSensorStatus;    // 传感器状态码
+    uint32_t m_forceSensorCounter;   // 采样计数器
+    float m_forceSensorTemp;     // 传感器温度 (°C)
 
     static const int HEARTBEAT_INTERVAL = 1000;
 };

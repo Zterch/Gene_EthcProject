@@ -60,6 +60,10 @@ private slots:
     // 紧急控制 【添加这行】
     void on_btnEmergencyStop_clicked();
 
+    // 第七轴(伸缩电机)特殊控制
+    void on_btnAxis7Homing_clicked();
+    void on_btnAxis7ResetPos_clicked();
+
     // 轴选择（新增）
     void on_comboCurrentAxis_currentIndexChanged(int index);
 

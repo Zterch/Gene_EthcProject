@@ -22,15 +22,16 @@ private slots:
     void on_btnApplyVelocity_clicked();
     void on_btnApplyRelativePos_clicked();
     void on_btnApplyAbsolutePos_clicked();
+    void on_btnAxis7Homing_clicked();  // 第七轴回零
     void on_btnClose_clicked();
 
 private:
     Ui::MultiAxisControlDialog *ui;
     EtherCATCommander *m_commander;
 
-    // 辅助函数：获取各轴速度值（按轴索引0~5）
+    // 辅助函数：获取各轴速度值（按轴索引0~6，含第七轴伸缩电机）
     QVector<float> getAxisVelocities() const;
-    // 获取各轴位置值
+    // 获取各轴位置值（按轴索引0~6，含第七轴伸缩电机）
     QVector<float> getAxisPositions() const;
 };
 

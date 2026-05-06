@@ -66,6 +66,7 @@ typedef struct {
 #define CMD_IGH_CLEAR_ERROR      (CMD_BASE + 18)
 #define CMD_DESTROY_MASTER       (CMD_BASE + 19)
 #define CMD_MASTER_OP_KEYDOWN    (CMD_BASE + 20)
+#define CMD_AXIS7_HOMING         (CMD_BASE + 21)   /* 第七轴回零命令 */
 
 
 
@@ -161,6 +162,17 @@ typedef struct {
     // 预留扩展
     uint32_t  cycleCount;       // 周期计数
     uint32_t  domainWC;         // 域工作计数
+    
+    // 第八轴(六维力传感器)数据 - 单独字段
+    float     forceFx;          // X方向力 (N)
+    float     forceFy;          // Y方向力 (N)
+    float     forceFz;          // Z方向力 (N)
+    float     torqueMx;         // X方向力矩 (Nm)
+    float     torqueMy;         // Y方向力矩 (Nm)
+    float     torqueMz;         // Z方向力矩 (Nm)
+    uint32_t  forceSensorStatus; // 力传感器状态码
+    uint32_t  forceSensorCounter; // 采样计数器
+    float     forceSensorTemp;  // 传感器温度 (°C)
 } MASTER_STATUS_REPORT;
 #pragma pack()  // 恢复默认对齐
 // 在文件末尾，#pragma pack() 之前添加:

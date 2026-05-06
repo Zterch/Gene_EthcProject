@@ -20,10 +20,10 @@ MainWindow::MainWindow(QWidget *parent)
     m_axisCheckGroup = new QButtonGroup(this);
     m_axisCheckGroup->setExclusive(false);
 
-    // 使用列表存储指针，并检查空值
+    // 使用列表存储指针，并检查空值 (8轴，含第七轴伸缩电机和第八轴六维力传感器)
     QList<QCheckBox*> axisChecks = {
         ui->chkAxis0, ui->chkAxis1, ui->chkAxis2,
-        ui->chkAxis3, ui->chkAxis4, ui->chkAxis5
+        ui->chkAxis3, ui->chkAxis4, ui->chkAxis5, ui->chkAxis6, ui->chkAxis7
     };
 
     for (int i = 0; i < axisChecks.size(); ++i) {
@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
         }
     }
 
-    setWindowTitle("EtherCAT 主站控制系统 v2.0 - 6轴KGU驱动器");
+    setWindowTitle("EtherCAT 主站控制系统 v2.0 - 8轴(6轴+伸缩+力传感器)");
 
     // 【关键修复】检查statusTab是否有布局，没有则创建
     if (!ui->statusTab->layout()) {
@@ -50,11 +50,15 @@ MainWindow::MainWindow(QWidget *parent)
     m_pidConfigTab->setCommander(m_commander);
     ui->tabWidget->addTab(m_pidConfigTab, "PID参数配置");
 
-    // 初始化轴选择下拉框 - 6轴
+    // 初始化轴选择下拉框 - 8轴(含第七轴伸缩电机和第八轴六维力传感器)
     if (ui->comboCurrentAxis) {
         ui->comboCurrentAxis->clear();
-        for (int i = 0; i < 6; i++) {
-            ui->comboCurrentAxis->addItem(QString("轴 %1").arg(i), i);
+        for (int i = 0; i < 8; i++) {
+            QString axisName;
+            if (i == 6) axisName = QString("轴 %1 (伸缩)").arg(i);
+            else if (i == 7) axisName = QString("轴 %1 (力传感器)").arg(i);
+            else axisName = QString("轴 %1").arg(i);
+            ui->comboCurrentAxis->addItem(axisName, i);
         }
         ui->comboCurrentAxis->setCurrentIndex(0);
 
@@ -67,12 +71,12 @@ MainWindow::MainWindow(QWidget *parent)
     m_axisCheckGroup = new QButtonGroup(this);
     m_axisCheckGroup->setExclusive(false);   // 允许多选
 
-    // 将6个复选框加入组，并关联ID
-    QCheckBox* chkAxes[6] = {
+    // 将8个复选框加入组，并关联ID
+    QCheckBox* chkAxes[8] = {
         ui->chkAxis0, ui->chkAxis1, ui->chkAxis2,
-        ui->chkAxis3, ui->chkAxis4, ui->chkAxis5
+        ui->chkAxis3, ui->chkAxis4, ui->chkAxis5, ui->chkAxis6, ui->chkAxis7
     };
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < 8; ++i) {
         m_axisCheckGroup->addButton(chkAxes[i], i);
     }
 
@@ -95,8 +99,9 @@ MainWindow::MainWindow(QWidget *parent)
     // 显示欢迎消息
     if (ui->txtLog) {
         ui->txtLog->appendPlainText(QDateTime::currentDateTime().toString("[yyyy-MM-dd hh:mm:ss] ") +
-                                   "EtherCAT CiA 402 六轴控制系统已启动");
-        ui->txtLog->appendPlainText("支持6轴独立控制，使用轴选择下拉框切换当前控制轴");
+                                   "EtherCAT CiA 402 八轴控制系统已启动");
+        ui->txtLog->appendPlainText("支持8轴独立控制(6轴旋转+1轴伸缩+1轴力传感器)，使用轴选择下拉框切换当前控制轴");
+        ui->txtLog->appendPlainText("注意: 第七轴(伸缩电机)使用单圈编码器，断电后需要重新回零");
     }
 }
 
@@ -141,7 +146,7 @@ void MainWindow::setupConnections()
             enableControls(true);
             // 检查是否有至少一个从站进入OP
             bool anySlaveOp = false;
-            for (int i = 0; i < report.slaveCount && i < 6; i++) {
+            for (int i = 0; i < report.slaveCount && i < 8; i++) {
                 if (report.slaves[i].statusWord == 0x0237 ||
                     report.slaves[i].statusWord == 0x0A37) {
                     anySlaveOp = true;
@@ -247,8 +252,8 @@ void MainWindow::on_btnConnect_clicked()
 
     if (m_commander->connectToMaster(ip, port)) {
         ui->statusbar->showMessage(QString("已连接到 %1:%2").arg(ip).arg(port), 3000);
-        // 设置轴数为6
-        m_commander->setAxisCount(6);
+        // 设置轴数为7 (6轴旋转+1轴伸缩电机)
+        m_commander->setAxisCount(7);
     } else {
         QMessageBox::critical(this, "错误", "连接失败，请检查网络和端口设置");
     }
@@ -266,7 +271,7 @@ void MainWindow::on_btnCreateMaster_clicked()
 {
     m_commander->createMaster();
     ui->txtLog->appendPlainText(QDateTime::currentDateTime().toString("[yyyy-MM-dd hh:mm:ss] ") +
-                               "发送命令: 创建主站 (6轴)");
+                               "发送命令: 创建主站 (8轴: 6轴旋转+1轴伸缩+1轴力传感器)");
 }
 
 void MainWindow::on_btnScanSlaves_clicked()
@@ -280,7 +285,7 @@ void MainWindow::on_btnConfigurePDO_clicked()
 {
     m_commander->configurePDOs();
     ui->txtLog->appendPlainText(QDateTime::currentDateTime().toString("[yyyy-MM-dd hh:mm:ss] ") +
-                               "发送命令: 配置PDO (6轴)");
+                               "发送命令: 配置PDO (8轴: 6轴旋转+1轴伸缩+1轴力传感器)");
 }
 
 void MainWindow::on_btnActivateMaster_clicked()
@@ -304,40 +309,40 @@ void MainWindow::on_btnClearErrors_clicked()
                                "发送命令: 清除所有轴错误");
 }
 
-// ===== 6轴整体控制 =====
+// ===== 8轴整体控制 =====
 void MainWindow::on_btnAllShutdown_clicked()
 {
-    m_commander->driveShutdown(0x3F);  // 0b00111111 = 6轴
+    m_commander->driveShutdown(0xFF);  // 0b11111111 = 8轴
     ui->txtLog->appendPlainText(QDateTime::currentDateTime().toString("[yyyy-MM-dd hh:mm:ss] ") +
-                               "发送CiA402: 全部Shutdown (轴掩码: 0x3F)");
+                               "发送CiA402: 全部Shutdown (轴掩码: 0xFF, 8轴)");
 }
 
 void MainWindow::on_btnAllSwitchOn_clicked()
 {
-    m_commander->driveSwitchOn(0x3F);  // 6轴
+    m_commander->driveSwitchOn(0xFF);  // 8轴
     ui->txtLog->appendPlainText(QDateTime::currentDateTime().toString("[yyyy-MM-dd hh:mm:ss] ") +
-                               "发送CiA402: 全部Switch On (轴掩码: 0x3F)");
+                               "发送CiA402: 全部Switch On (轴掩码: 0xFF, 8轴)");
 }
 
 void MainWindow::on_btnAllEnableOp_clicked()
 {
-    m_commander->driveEnableOP(0x3F);  // 6轴
+    m_commander->driveEnableOP(0xFF);  // 8轴
     ui->txtLog->appendPlainText(QDateTime::currentDateTime().toString("[yyyy-MM-dd hh:mm:ss] ") +
-                               "发送CiA402: 全部Enable Operation (轴掩码: 0x3F)");
+                               "发送CiA402: 全部Enable Operation (轴掩码: 0xFF, 8轴)");
 }
 
 void MainWindow::on_btnAllHalt_clicked()
 {
-    m_commander->driveHalt(0x3F);  // 6轴
+    m_commander->driveHalt(0xFF);  // 8轴
     ui->txtLog->appendPlainText(QDateTime::currentDateTime().toString("[yyyy-MM-dd hh:mm:ss] ") +
-                               "发送CiA402: 全部Halt (轴掩码: 0x3F)");
+                               "发送CiA402: 全部Halt (轴掩码: 0xFF, 8轴)");
 }
 
 void MainWindow::on_btnAllFaultReset_clicked()
 {
-    m_commander->faultReset(0x3F);  // 6轴
+    m_commander->faultReset(0xFF);  // 8轴
     ui->txtLog->appendPlainText(QDateTime::currentDateTime().toString("[yyyy-MM-dd hh:mm:ss] ") +
-                               "发送CiA402: 全部Fault Reset (轴掩码: 0x3F)");
+                               "发送CiA402: 全部Fault Reset (轴掩码: 0xFF, 8轴)");
 }
 
 // ===== 单轴控制 =====
@@ -381,11 +386,32 @@ void MainWindow::on_btnAxisHalt_clicked()
 void MainWindow::on_comboCurrentAxis_currentIndexChanged(int index)
 {
     m_currentAxis = ui->comboCurrentAxis->itemData(index).toInt();
-    ui->txtLog->appendPlainText(QDateTime::currentDateTime().toString("[yyyy-MM-dd hh:mm:ss] ") +
-                               QString("当前控制轴切换为: 轴%1").arg(m_currentAxis));
+    
+    // 第七轴特殊提示
+    if (m_currentAxis == 6) {
+        ui->txtLog->appendPlainText(QDateTime::currentDateTime().toString("[yyyy-MM-dd hh:mm:ss] ") +
+                                   QString("当前控制轴切换为: 轴%1 (伸缩电机)").arg(m_currentAxis));
+        // 更新运动控制单位显示
+        ui->label_3->setText("速度 (mm/s):");
+        ui->label_4->setText("位置 (mm):");
+        ui->spinVelocity->setRange(-10.0, 10.0);
+        ui->spinVelocity->setSuffix(" mm/s");
+        ui->spinPosition->setRange(0.0, 10.0);
+        ui->spinPosition->setSuffix(" mm");
+    } else {
+        ui->txtLog->appendPlainText(QDateTime::currentDateTime().toString("[yyyy-MM-dd hh:mm:ss] ") +
+                                   QString("当前控制轴切换为: 轴%1").arg(m_currentAxis));
+        // 恢复旋转轴单位
+        ui->label_3->setText("速度 (度/秒):");
+        ui->label_4->setText("位置 (度):");
+        ui->spinVelocity->setRange(-360.0, 360.0);
+        ui->spinVelocity->setSuffix(" °/s");
+        ui->spinPosition->setRange(-360.0, 360.0);
+        ui->spinPosition->setSuffix(" °");
+    }
 
     // 联动：清空所有复选框，只勾选当前轴
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < 7; ++i) {
         QCheckBox* chk = qobject_cast<QCheckBox*>(m_axisCheckGroup->button(i));
         if (chk) {
             chk->setChecked(i == m_currentAxis);
@@ -404,12 +430,38 @@ void MainWindow::on_comboCurrentAxis_currentIndexChanged(int index)
 // ===== 紧急控制 =====
 void MainWindow::on_btnEmergencyStop_clicked()
 {
-    //if (QMessageBox::question(this, "确认", "确认执行紧急停止？\n这将停止所有6个轴！",
+    //if (QMessageBox::question(this, "确认", "确认执行紧急停止？\n这将停止所有8个轴！",
     //                         QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
-        m_commander->emergencyStop(0x3F);  // 6轴紧急停止
+        m_commander->emergencyStop(0xFF);  // 8轴紧急停止
         ui->txtLog->appendPlainText(QDateTime::currentDateTime().toString("[yyyy-MM-dd hh:mm:ss] ") +
-                                   "执行紧急停止 - 全部6轴");
+                                   "执行紧急停止 - 全部8轴(含伸缩电机和力传感器)");
     //}
+}
+
+// ===== 第七轴(伸缩电机)特殊控制 =====
+void MainWindow::on_btnAxis7Homing_clicked()
+{
+    if (!m_commander || !m_commander->isConnected()) {
+        ui->txtLog->appendPlainText("错误: 未连接到主站，无法执行回零");
+        return;
+    }
+
+    float targetHomeMm = 0.0f;  // 默认回到0mm
+    float homingSpeedMmPerSec = 2.0f;  // 默认速度2mm/s
+
+    if (m_commander->axis7Homing(targetHomeMm, homingSpeedMmPerSec)) {
+        ui->txtLog->appendPlainText(QDateTime::currentDateTime().toString("[yyyy-MM-dd hh:mm:ss] ") +
+                                   QString("第七轴(伸缩电机)开始回零: 目标 %.1fmm, 速度 %.1fmm/s")
+                                   .arg(targetHomeMm).arg(homingSpeedMmPerSec));
+    } else {
+        ui->txtLog->appendPlainText("错误: 第七轴回零命令发送失败");
+    }
+}
+
+void MainWindow::on_btnAxis7ResetPos_clicked()
+{
+    ui->txtLog->appendPlainText(QDateTime::currentDateTime().toString("[yyyy-MM-dd hh:mm:ss] ") +
+                               "第七轴位置重置功能暂未实现");
 }
 
 // ===== 运动控制（使用当前选中的轴） =====

@@ -26,7 +26,7 @@
 #define CPU_LEAD    3
 
 //一个主站下，最多拥有的电机个数
-#define MASTER_ARMS_MAX_SIZE 6
+#define MASTER_ARMS_MAX_SIZE 8
 
 typedef enum { MN_ID_SUPR, MN_ID_LEADER, MN_ID_MAX } MODULE_NAME_ID;
 typedef enum { MN_ID_MASTER_ARMS = 0 } MASTER_ID;
